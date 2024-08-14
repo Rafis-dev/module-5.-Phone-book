@@ -233,6 +233,7 @@ const data = [
     const app = document.querySelector(selectorApp);
     const phoneBook = renderPhoneBook(app, title);
     const {list, logo, btnAdd, formOverlay, form} = phoneBook;
+    const modalClose = document.querySelector('.close');
 
     // Функционал
     const allRow = renderContacts(list, data);
@@ -242,9 +243,15 @@ const data = [
     btnAdd.addEventListener('click', () => {
       formOverlay.classList.add('is-visible');
     });
+
+    modalClose.addEventListener('click', () => {
+      formOverlay.classList.remove('is-visible');
+    });
+
     form.addEventListener('click', event => {
       event.stopPropagation();
     });
+
     formOverlay.addEventListener('click', () => {
       formOverlay.classList.remove('is-visible');
     });
