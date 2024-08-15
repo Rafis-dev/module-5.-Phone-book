@@ -80,8 +80,8 @@ const data = [
     thead.insertAdjacentHTML('beforeend', `
       <tr>
       <th class="delete">Удалить</th>
-      <th>Имя</th>
-      <th>Фамилия</th>
+      <th class="name">Имя</th>
+      <th class="surname">Фамилия</th>
       <th>Телефон</th>
       </tr>
       `);
@@ -140,6 +140,7 @@ const data = [
 
   const createRow = ({name: firstName, surname, phone}) => {
     const tr = document.createElement('tr');
+    tr.classList.add('contact');
     const tdDel = document.createElement('td');
     tdDel.classList.add('delete');
     const buttonDel = document.createElement('button');
@@ -212,8 +213,10 @@ const data = [
       list: table.tbody,
       logo,
       btnAdd: buttonGroup.btns[0],
+      btnDel: buttonGroup.btns[1],
       formOverlay: form.overlay,
       form: form.form,
+      table,
     };
   };
 
@@ -232,8 +235,15 @@ const data = [
   const init = (selectorApp, title) => {
     const app = document.querySelector(selectorApp);
     const phoneBook = renderPhoneBook(app, title);
-    const {list, logo, btnAdd, formOverlay, form} = phoneBook;
-    const modalClose = document.querySelector('.close');
+    const tHead = document.querySelector('thead');
+    const {
+      list,
+      logo,
+      btnAdd,
+      formOverlay,
+      form,
+      btnDel,
+      table} = phoneBook;
 
     // Функционал
     const allRow = renderContacts(list, data);
@@ -244,16 +254,47 @@ const data = [
       formOverlay.classList.add('is-visible');
     });
 
-    modalClose.addEventListener('click', () => {
-      formOverlay.classList.remove('is-visible');
+    formOverlay.addEventListener('click', e => {
+      const target = e.target;
+      if (target === formOverlay ||
+        target.classList.contains('close')) {
+        formOverlay.classList.remove('is-visible');
+      };
     });
 
-    form.addEventListener('click', event => {
-      event.stopPropagation();
+    btnDel.addEventListener('click', () => {
+      document.querySelectorAll('.delete').forEach(del => {
+        del.classList.toggle('is-visible');
+      });
     });
 
-    formOverlay.addEventListener('click', () => {
-      formOverlay.classList.remove('is-visible');
+    list.addEventListener('click', e => {
+      const target = e.target;
+      if (target.closest('.del-icon')) {
+        target.closest('.contact').remove();
+      }
+    });
+
+    // сортировка по алфавиту
+    const sortRows = cellIndex => {
+      const sortedRows = Array.from(table.rows)
+        .slice(1)
+        .sort((rowA, rowB) => {
+          const cellA = rowA.cells[cellIndex].textContent;
+          const cellB = rowB.cells[cellIndex].textContent;
+          return cellA.localeCompare(cellB);
+        });
+      list.append(...sortedRows);
+    };
+
+    tHead.addEventListener('click', e => {
+      const target = e.target;
+      if (target.classList.contains('name')) {
+        return sortRows(1);
+      };
+      if (target.classList.contains('surname')) {
+        return sortRows(2);
+      };
     });
   };
 

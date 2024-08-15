@@ -16,6 +16,11 @@ body {
   text-transform: uppercase;
 }
 
+.name,
+.surname {
+  cursor: pointer;
+}
+
 @media (max-width: 720px) {
   .logo {
     font-size: 20px;
