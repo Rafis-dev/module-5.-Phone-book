@@ -16,6 +16,14 @@ body {
   text-transform: uppercase;
 }
 
+/* .arrow-up::after {
+  content: '\2191';
+}
+
+.arrow-down::after {
+  content: '\2193';
+} */
+
 .name,
 .surname {
   cursor: pointer;

@@ -276,24 +276,41 @@ const data = [
     });
 
     // сортировка по алфавиту
-    const sortRows = cellIndex => {
+    let sortOrder = true; // true - по возрастанию, false - по убыванию
+
+    const clearArrows = () => {
+      const name = tHead.querySelector('.name');
+      const surname = tHead.querySelector('.surname');
+
+      // Убираем стрелки из заголовков
+      name.textContent = 'Имя';
+      surname.textContent = 'Фамилия';
+    };
+
+    const sortRows = (cellIndex, arrow) => {
       const sortedRows = Array.from(table.rows)
         .slice(1)
         .sort((rowA, rowB) => {
           const cellA = rowA.cells[cellIndex].textContent;
           const cellB = rowB.cells[cellIndex].textContent;
-          return cellA.localeCompare(cellB);
+          return sortOrder ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
         });
       list.append(...sortedRows);
+      sortOrder = !sortOrder; // меняем порядок сортировки
+
+      clearArrows(); // Очищаем все стрелки
+
+      sortOrder ? arrow.insertAdjacentHTML('beforeend', '&darr;') :
+        arrow.insertAdjacentHTML('beforeend', '&uarr;');
     };
 
     tHead.addEventListener('click', e => {
       const target = e.target;
       if (target.classList.contains('name')) {
-        return sortRows(1);
+        return sortRows(1, target);
       };
       if (target.classList.contains('surname')) {
-        return sortRows(2);
+        return sortRows(2, target);
       };
     });
   };
