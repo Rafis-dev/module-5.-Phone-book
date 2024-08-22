@@ -1,38 +1,12 @@
-const data = [
-  {
-    name: 'Иван',
-    surname: 'Петров',
-    phone: '+79514545454',
-  },
-  {
-    name: 'Игорь',
-    surname: 'Семёнов',
-    phone: '+79999999999',
-  },
-  {
-    name: 'Семён',
-    surname: 'Иванов',
-    phone: '+79800252525',
-  },
-  {
-    name: 'Мария',
-    surname: 'Попова',
-    phone: '+79876543210',
-  },
-];
 
 {
-  const addContactData = contact => {
-    data.push(contact);
-    console.log(data);
-  };
-
+  // создаем контейнер
   const createContainer = () => {
     const container = document.createElement('div');
     container.classList.add('container');
     return container;
   };
-
+  // создаем header
   const createHeader = () => {
     const header = document.createElement('header');
     header.classList.add('header');
@@ -41,7 +15,7 @@ const data = [
     header.headerContainer = headerContainer;
     return header;
   };
-
+  // создаем header со именем
   const createLogo = title => {
     const h1 = document.createElement('h1');
     h1.classList.add('logo');
@@ -49,7 +23,7 @@ const data = [
 
     return h1;
   };
-
+  // создаем main и вставляем туда контейнер
   const createMain = () => {
     const main = document.createElement('main');
     const mainContainer = createContainer();
@@ -57,7 +31,7 @@ const data = [
     main.mainContainer = mainContainer;
     return main;
   };
-
+  // создаем кнопки; в качестве параметра объект, где определены класс, тип, и текст кнопки
   const createButtonsGroup = params => {
     const btnWrapper = document.createElement('div');
     btnWrapper.classList.add('btn-wrapper');
@@ -77,7 +51,7 @@ const data = [
       btns,
     };
   };
-
+  // создаем таблицу с tbody и thead
   const createTable = () => {
     const table = document.createElement('table');
     table.classList.add('table', 'table-striped');
@@ -97,7 +71,7 @@ const data = [
 
     return table;
   };
-
+  // создаем форму добавления контакта на страницу
   const createForm = () => {
     const overlay = document.createElement('div');
     overlay.classList.add('form-overlay');
@@ -142,7 +116,7 @@ const data = [
       form,
     };
   };
-
+  // создаем строчку в таблице контактов (в качестве параметра объект со значением атрибутов name из инпута)
   const createRow = ({name: firstName, surname, phone}) => {
     const tr = document.createElement('tr');
     tr.classList.add('contact');
@@ -166,18 +140,20 @@ const data = [
     btnEdit.setAttribute('type', 'button');
     btnEdit.textContent = 'Редактировать';
     tdEdit.append(btnEdit);
-
     tr.append(tdDel, tdName, tdSurname, tdPhone, tdEdit);
 
     return tr;
   };
-
+  /* добавляем строчки на страницу (elem - сюда вставляем строчки, data -
+    отсюда функция createRow берет нужные данные для создания строчки,
+    allRow - перебираем массив объектов с помощью метода map и
+    из каждого делаем строчку) */
   const renderContacts = (elem, data) => {
     const allRow = data.map(createRow);
     elem.append(...allRow);
     return allRow;
   };
-
+  // создаем футер
   const createFooter = title => {
     const footer = document.createElement('footer');
     footer.classList.add('footer');
@@ -189,7 +165,7 @@ const data = [
 
     return footer;
   };
-
+  // отображаем данные на странице
   const renderPhoneBook = (app, title) => {
     const header = createHeader();
     const logo = createLogo(title);
@@ -224,7 +200,7 @@ const data = [
       table,
     };
   };
-
+  // отображение номера телефона в заголовке
   const hoverRow = (allRow, logo) => {
     const text = logo.textContent;
     allRow.forEach(contact => {
@@ -236,7 +212,7 @@ const data = [
       });
     });
   };
-
+  // открываем и закрываем модалку
   const modalControl = (btnAdd, formOverlay) => {
     const openModal = () => {
       formOverlay.classList.add('is-visible');
@@ -259,7 +235,30 @@ const data = [
       closeModal,
     };
   };
+  /* получаем данные из localStorage. Если их там изначально нет,
+   то возвращаем пустой массив */
+  const getStorage = (key) => {
+    const storageContacts = JSON.parse(localStorage.getItem(key)) || [];
+    return storageContacts;
+  };
+  // Добавляем новые контакты в LocalStorage
+  const setStorage = (key, value) => {
+    const allValues = getStorage(key);
+    allValues.push(value);
+    localStorage.setItem(key, JSON.stringify(allValues));
+  };
+  // Удаляем данные из localStorage
+  const removeStorage = (phone, row) => {
+    phone = row.querySelector('a').textContent;
 
+    const contacts = getStorage('contacts');
+    const index = contacts.findIndex(contact => contact.phone === phone);
+    if (index !== -1) {
+      contacts.splice(index, 1);
+    }
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  };
+  // удаляем данные со страницы и здес же вызываем removeStoragem
   const deleteControl = (btnDel, list) => {
     btnDel.addEventListener('click', () => {
       document.querySelectorAll('.delete').forEach(del => {
@@ -270,28 +269,31 @@ const data = [
     list.addEventListener('click', e => {
       const target = e.target;
       if (target.closest('.del-icon')) {
-        target.closest('.contact').remove();
+        const row = target.closest('.contact');
+        row.remove();
+        removeStorage('phone', row);
       }
     });
   };
-
+  // добавляем новый контакт на страницу
   const addContactPage = (contact, list) => {
     list.append(createRow(contact));
   };
-
+  // работа с формой и добавляем контакты в localStorage
   const formControl = (form, list, closeModal) => {
     form.addEventListener('submit', e => {
       e.preventDefault();
       const formData = new FormData(e.target);
-
       const newContact = Object.fromEntries(formData);
-      addContactData(newContact);
+
+      setStorage('contacts', newContact);
+      // addContactData(newContact);
       addContactPage(newContact, list);
       form.reset();
       closeModal();
     });
   };
-
+  // основная функция вызова приложения
   const init = (selectorApp, title) => {
     const app = document.querySelector(selectorApp);
     const {
@@ -305,7 +307,7 @@ const data = [
     const tHead = document.querySelector('thead');
 
     // Функционал
-    const allRow = renderContacts(list, data);
+    const allRow = renderContacts(list, getStorage('contacts'));
     const {closeModal} = modalControl(btnAdd, formOverlay);
 
     hoverRow(allRow, logo);
@@ -313,16 +315,15 @@ const data = [
     formControl(form, list, closeModal);
     // сортировка по алфавиту
     let sortOrder = true; // true - по возрастанию, false - по убыванию
-
+    // Убираем стрелки из заголовков
     const clearArrows = () => {
       const name = tHead.querySelector('.name');
       const surname = tHead.querySelector('.surname');
 
-      // Убираем стрелки из заголовков
       name.textContent = 'Имя';
       surname.textContent = 'Фамилия';
     };
-
+    // функция сортировки
     const sortRows = (cellIndex, arrow) => {
       const sortedRows = Array.from(table.rows)
         .slice(1)
@@ -332,7 +333,6 @@ const data = [
           return sortOrder ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
         });
       list.append(...sortedRows);
-
       sortOrder = !sortOrder; // меняем порядок сортировки
 
       clearArrows(); // Очищаем все стрелки
@@ -340,7 +340,7 @@ const data = [
       sortOrder ? arrow.insertAdjacentHTML('beforeend', '&darr;') :
         arrow.insertAdjacentHTML('beforeend', '&uarr;');
     };
-
+    // применяем сортировку к столбцу имени и фамилии
     tHead.addEventListener('click', e => {
       const target = e.target;
       if (target.classList.contains('name')) {
@@ -354,4 +354,5 @@ const data = [
 
   window.phoneBookInit = init;
 };
+
 
