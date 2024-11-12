@@ -1,5 +1,6 @@
-import elements from './createElements.js';
+import elements from './createElements';
 const {createContainer,
+  createImageLogo,
   createHeader,
   createLogo,
   createMain,
@@ -21,6 +22,7 @@ const renderContacts = (elem, data) => {
 // отображаем данные на странице
 const renderPhoneBook = (app, title) => {
   const header = createHeader();
+  const imageLogo = createImageLogo();
   const logo = createLogo(title);
   const main = createMain();
   const buttonGroup = createButtonsGroup([
@@ -39,7 +41,7 @@ const renderPhoneBook = (app, title) => {
   const {form, overlay} = createForm();
   const footer = createFooter(title);
 
-  header.headerContainer.append(logo);
+  header.headerContainer.append(imageLogo, logo);
   main.mainContainer.append(buttonGroup.btnWrapper, table, overlay);
   app.append(header, main, footer);
 

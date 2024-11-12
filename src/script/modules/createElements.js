@@ -1,3 +1,11 @@
+import image from '../../img/icon.svg';
+
+const createImageLogo = () => {
+  const img = document.createElement('img');
+  img.src = image;
+  return img;
+};
+
 // создаем контейнер
 const createContainer = () => {
   const container = document.createElement('div');
@@ -158,6 +166,7 @@ const createFooter = title => {
 };
 
 export default {
+  createImageLogo,
   createContainer,
   createHeader,
   createLogo,

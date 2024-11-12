@@ -1,5 +1,5 @@
-import * as storage from './storage.js';
-import {createRow} from './createElements.js';
+import * as storage from './storage';
+import {createRow} from './createElements';
 // открываем и закрываем модалку
 const modalControl = (btnAdd, formOverlay) => {
   const openModal = () => {

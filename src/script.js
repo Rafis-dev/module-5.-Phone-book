@@ -1,8 +1,10 @@
-import render from './modules/render.js';
-import control from './modules/control.js';
-import {getStorage} from './modules/storage.js';
+import render from './script/modules/render.js';
+import control from './script/modules/control.js';
+import {getStorage} from './script/modules/storage.js';
 const {renderContacts, renderPhoneBook, hoverRow} = render;
 const {modalControl, deleteControl, formControl} = control;
+
+import './scss/index.scss';
 
 // основная функция вызова приложения
 const init = (selectorApp, title) => {
